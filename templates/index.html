@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Platforms — MP3, MP4 & Images</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
+
+  <!-- Background Glow FX -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/3 -right-40 w-96 h-96 bg-pink-600/15 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative z-10 max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Top Navigation / Header -->
+    <header class="flex items-center justify-between pb-6 border-b border-slate-800 mb-8">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <i data-lucide="cloud-download" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+            All Platforms
+          </h1>
+          <p class="text-xs text-slate-400">YouTube, TikTok, Instagram, Spotify, & More</p>
+        </div>
+      </div>
+
+      <!-- Right Header Actions & System Status -->
+      <div class="flex items-center gap-3 text-xs">
+        <div id="ffmpegBadge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400" title="Cek status FFmpeg">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span>FFmpeg: Memeriksa...</span>
+        </div>
+
+        <button id="openSettingsBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition-all hover:border-slate-700">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Pengaturan Cookies</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Input Section -->
+    <section class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl mb-8">
+      <div class="text-center max-w-2xl mx-auto mb-6">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+          Unduh Media Apapun dengan Mudah
+        </h2>
+        <p class="text-slate-400 text-sm">
+          Tempelkan tautan video, lagu, atau carousel. Aplikasi otomatis mengenali platform dan menyiapkan opsi unduh terbaik.
+        </p>
+      </div>
+
+      <!-- URL Input Bar -->
+      <form id="urlForm" class="flex flex-col sm:flex-row gap-3 max-w-3xl mx-auto mb-5">
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+            <i id="detectedPlatformIcon" data-lucide="link" class="w-5 h-5"></i>
+          </div>
+          <input 
+            type="url" 
+            id="urlInput" 
+            placeholder="Tempel link YouTube, Spotify, TikTok, Instagram, dll..." 
+            required
+            class="w-full pl-12 pr-10 py-3.5 bg-slate-950/80 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner text-sm sm:text-base"
+          />
+          <button type="button" id="clearBtn" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 hidden">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <button 
+          type="submit" 
+          id="inspectBtn"
+          class="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-medium rounded-xl transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base cursor-pointer">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span>Analisis Link</span>
+        </button>
+      </form>
+
+      <!-- Supported Platforms Badges -->
+      <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400">
+        <span class="text-slate-500 mr-1">Didukung:</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-950/60 border border-slate-800/80 flex items-center gap-1.5"><i data-lucide="youtube" class="w-3.5 h-3.5 text-red-500"></i> YouTube</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-950/60 border border-slate-800/80 flex items-center gap-1.5"><i data-lucide="music" class="w-3.5 h-3.5 text-emerald-400"></i> Spotify</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-950/60 border border-slate-800/80 flex items-center gap-1.5"><i data-lucide="video" class="w-3.5 h-3.5 text-cyan-400"></i> TikTok</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-950/60 border border-slate-800/80 flex items-center gap-1.5"><i data-lucide="instagram" class="w-3.5 h-3.5 text-pink-400"></i> Instagram</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-950/60 border border-slate-800/80 flex items-center gap-1.5"><i data-lucide="twitter" class="w-3.5 h-3.5 text-sky-400"></i> X / Twitter</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-950/60 border border-slate-800/80 flex items-center gap-1.5"><i data-lucide="image" class="w-3.5 h-3.5 text-amber-400"></i> Pinterest</span>
+        <span class="px-2.5 py-1 rounded-md bg-slate-950/60 border border-slate-800/80">+ 1000 Lainnya</span>
+      </div>
+    </section>
+
+    <!-- Error Alert Box -->
+    <div id="errorAlert" class="hidden p-4 rounded-xl bg-red-950/80 border border-red-800/80 text-red-200 text-sm mb-6 flex items-start gap-3">
+      <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
+      <div id="errorMessage" class="flex-1"></div>
+    </div>
+
+    <!-- Media Preview & Format Selection Section (Hidden initially) -->
+    <section id="previewSection" class="hidden bg-slate-900/80 border border-slate-800 rounded-2xl p-6 backdrop-blur-xl shadow-2xl mb-8 transition-all">
+      <div class="flex flex-col md:flex-row gap-6 items-start">
+        <!-- Thumbnail Preview -->
+        <div class="w-full md:w-64 aspect-video sm:aspect-square bg-slate-950 rounded-xl overflow-hidden border border-slate-800 relative group shrink-0 shadow-lg">
+          <img id="mediaThumbnail" src="" alt="Thumbnail" class="w-full h-full object-cover">
+          <div id="mediaDurationBadge" class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-[11px] font-mono text-slate-200"></div>
+          <div id="mediaPlatformBadge" class="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-indigo-600/90 text-[11px] font-medium text-white uppercase tracking-wider backdrop-blur-sm"></div>
+        </div>
+
+        <!-- Info & Config Column -->
+        <div class="flex-1 w-full space-y-4">
+          <div>
+            <h3 id="mediaTitle" class="text-lg sm:text-xl font-bold text-white line-clamp-2"></h3>
+            <p id="mediaUploader" class="text-sm text-slate-400 mt-1 flex items-center gap-1.5">
+              <i data-lucide="user" class="w-3.5 h-3.5"></i> <span></span>
+            </p>
+          </div>
+
+          <!-- Format Chooser Tabs -->
+          <div class="space-y-2">
+            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Format Pilihan:</label>
+            <div id="formatTabs" class="flex flex-wrap gap-2">
+              <button type="button" data-format="video" class="format-btn px-4 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-indigo-500 font-medium text-sm flex items-center gap-2 transition-all">
+                <i data-lucide="video" class="w-4 h-4 text-indigo-400"></i> Video MP4
+              </button>
+              <button type="button" data-format="audio" class="format-btn px-4 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-indigo-500 font-medium text-sm flex items-center gap-2 transition-all">
+                <i data-lucide="music" class="w-4 h-4 text-pink-400"></i> Audio MP3
+              </button>
+              <button type="button" data-format="image" class="format-btn px-4 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-300 hover:border-indigo-500 font-medium text-sm flex items-center gap-2 transition-all">
+                <i data-lucide="image" class="w-4 h-4 text-emerald-400"></i> Gambar Asli
+              </button>
+            </div>
+          </div>
+
+          <!-- Quality Dropdown -->
+          <div id="qualityContainer" class="space-y-2">
+            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Kualitas:</label>
+            <select id="qualitySelect" class="w-full sm:w-64 px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <!-- Options populated by JS -->
+            </select>
+            <p id="qualityHint" class="text-xs text-slate-400 mt-1"></p>
+          </div>
+
+          <!-- Action Download Button -->
+          <div class="pt-2 flex flex-wrap gap-3">
+            <button id="startDownloadBtn" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 active:scale-95 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center gap-2 text-sm sm:text-base transition-all">
+              <i data-lucide="download" class="w-5 h-5"></i>
+              <span>Unduh Sekarang</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-Item / Carousel / Playlist Grid -->
+      <div id="multiItemSection" class="hidden mt-8 pt-6 border-t border-slate-800">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <div>
+            <h4 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i>
+              <span id="multiItemTitle">Koleksi Media Ditemukan</span>
+            </h4>
+            <p class="text-xs text-slate-400 mt-0.5">Tersedia beberapa media (carousel/playlist). Kamu bisa unduh salah satu atau semuanya sekaligus.</p>
+          </div>
+          <button id="downloadAllZipBtn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-all">
+            <i data-lucide="archive" class="w-4 h-4 text-indigo-400"></i>
+            <span>Unduh Semua (.ZIP)</span>
+          </button>
+        </div>
+
+        <div id="multiItemGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+          <!-- Item cards dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Download Progress Card -->
+    <section id="progressSection" class="hidden bg-slate-900/90 border border-indigo-500/40 rounded-2xl p-6 backdrop-blur-xl shadow-2xl mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
+            <i id="progressIcon" data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
+          </div>
+          <div>
+            <h4 id="progressStatusText" class="text-sm font-bold text-white">Memproses Unduhan...</h4>
+            <p id="progressSubtext" class="text-xs text-slate-400">Menghubungkan ke server media...</p>
+          </div>
+        </div>
+        <span id="progressPercentText" class="text-lg font-mono font-bold text-indigo-400">0%</span>
+      </div>
+
+      <!-- Bar -->
+      <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-300 w-0"></div>
+      </div>
+    </section>
+
+    <!-- Download Completed Success Card -->
+    <section id="completedSection" class="hidden bg-slate-900/90 border border-emerald-500/40 rounded-2xl p-6 backdrop-blur-xl shadow-2xl mb-8 text-center sm:text-left">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <i data-lucide="check-circle-2" class="w-7 h-7"></i>
+          </div>
+          <div>
+            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-1">
+              Selesai & Tersimpan di Komputer
+            </span>
+            <h4 id="completedFilename" class="text-base font-bold text-white truncate max-w-md"></h4>
+            <p id="completedFolderInfo" class="text-xs text-slate-400 mt-0.5">Tersimpan di folder <code class="text-indigo-300 font-mono">downloads/</code></p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <a id="browserDownloadBtn" href="#" download class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl text-sm shadow-lg shadow-emerald-600/25 flex items-center gap-2 transition-all">
+            <i data-lucide="arrow-down-to-line" class="w-4 h-4"></i>
+            <span>Simpan ke Browser</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Settings Modal (Cookies & Setup) -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="shield-alert" class="w-5 h-5 text-indigo-400"></i>
+          <h3 class="text-base font-bold text-white">Pengaturan Cookies & Autentikasi</h3>
+        </div>
+        <button id="closeSettingsBtn" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="text-xs text-slate-400 space-y-2">
+        <p>Instagram dan bot-detection YouTube terkadang memerlukan session cookies agar Anda dapat mengunduh post atau akun yang Anda ikuti.</p>
+        <p class="text-slate-300">Gunakan ekstensi browser seperti <span class="text-indigo-300">"Get cookies.txt LOCALLY"</span> untuk mengekspor cookies berformat Netscape.</p>
+      </div>
+
+      <!-- Current Cookies Status -->
+      <div id="cookiesStatusBox" class="p-3 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
+        <span class="text-slate-400">Status Cookies:</span>
+        <span id="cookiesStatusIndicator" class="font-semibold text-amber-400">Belum disetel</span>
+      </div>
+
+      <!-- Input Form -->
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Unggah file cookies.txt:</label>
+          <input type="file" id="cookiesFileInput" accept=".txt" class="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
+        </div>
+
+        <div class="text-center text-xs text-slate-500">— ATAU TEMPEL TEKS COOKIES —</div>
+
+        <div>
+          <textarea id="cookiesTextInput" rows="4" placeholder="# Netscape HTTP Cookie File&#10;.instagram.com..." class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button id="deleteCookiesBtn" class="px-3 py-1.5 bg-red-950/60 hover:bg-red-900 border border-red-800 text-red-300 rounded-lg text-xs font-medium transition-all">
+          Hapus Cookies
+        </button>
+        <button id="saveCookiesBtn" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all">
+          Simpan Cookies
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center text-xs text-slate-600 pb-12">
+    All Platforms &bull; Dibuat untuk produktivitas pribadi &bull; Python & FastAPI
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

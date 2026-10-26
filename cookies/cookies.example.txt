@@ -1,0 +1,3 @@
+# Letakkan cookies browser kamu di sini dan simpan sebagai cookies.txt
+# File cookies.txt asli diabaikan oleh git demi keamanan privasi akun.
+# Format Netscape HTTP Cookie File

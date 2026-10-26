@@ -1,0 +1,46 @@
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Large binaries (GitHub limit is 100MB; ffmpeg & ffprobe are ~227MB each)
+*.exe
+ffmpeg.exe
+ffprobe.exe
+bin/
+
+# SENSITIVE: Cookies & Sessions (Jangan pernah di-push ke GitHub!)
+cookies/*
+!cookies/.gitkeep
+!cookies/cookies.example.txt
+
+# Media output / downloaded files
+downloads/*
+!downloads/.gitkeep
+
+# Environment variables & secrets
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+
+# IDE & OS files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Internal planning & notes
+PLAN.md
+WALKTHROUGH.md
+plan*.md
+walkthrough*.md
