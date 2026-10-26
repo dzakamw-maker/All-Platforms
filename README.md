@@ -1,4 +1,4 @@
-# All Platforms 🚀
+# All Platforms BY tubagus & dzaka 🚀
 
 **MASIH DALAM TAHAP PENGEMBANGAN**
 
