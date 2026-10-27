@@ -72,6 +72,8 @@ function updateDetectedPlatformIcon(url) {
   else if (url.includes("youtube.com") || url.includes("youtu.be")) iconName = "youtube";
   else if (url.includes("tiktok.com")) iconName = "video";
   else if (url.includes("instagram.com")) iconName = "instagram";
+  else if (url.includes("threads.net") || url.includes("threads.com")) iconName = "at-sign";
+  else if (url.includes("facebook.com") || url.includes("fb.watch") || url.includes("fb.com")) iconName = "facebook";
   else if (url.includes("twitter.com") || url.includes("x.com")) iconName = "twitter";
   else if (url.includes("pinterest.com") || url.includes("pin.it")) iconName = "image";
 

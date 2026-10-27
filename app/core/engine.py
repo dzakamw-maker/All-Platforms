@@ -7,6 +7,8 @@ from app.core.youtube import inspect_youtube, download_youtube_media
 from app.core.spotify import inspect_spotify, download_spotify_track
 from app.core.tiktok import inspect_tiktok, download_tiktok_media
 from app.core.instagram import inspect_instagram, download_instagram_media
+from app.core.threads import inspect_threads, download_threads_media
+from app.core.twitter import inspect_twitter, download_twitter_media
 from app.core.pinterest import inspect_pinterest, download_pinterest_media
 from app.core.generic import inspect_generic, download_generic_media
 from app.core.zipper import create_zip_archive
@@ -48,6 +50,16 @@ def inspect_url(url: str) -> Dict[str, Any]:
             data["audio_qualities"] = ["320"]
             return data
 
+        elif platform == Platform.THREADS:
+            data = inspect_threads(url)
+            data["platform_name"] = "Threads"
+            return data
+
+        elif platform == Platform.TWITTER:
+            data = inspect_twitter(url)
+            data["platform_name"] = "Twitter / X"
+            return data
+
         elif platform == Platform.PINTEREST:
             data = inspect_pinterest(url)
             data["platform_name"] = "Pinterest"
@@ -62,14 +74,16 @@ def inspect_url(url: str) -> Dict[str, Any]:
             return data
 
     except Exception as e:
-        # Jika inspektur khusus gagal, coba generic fallback
-        try:
-            fallback_data = inspect_generic(url)
-            fallback_data["platform_name"] = detection["name"]
-            fallback_data["supported_formats"] = ["mp4", "mp3"]
-            return fallback_data
-        except Exception:
-            raise e
+        # Jika inspektur khusus gagal (dan bukan Threads/Twitter), coba generic fallback
+        if platform not in [Platform.THREADS, Platform.TWITTER]:
+            try:
+                fallback_data = inspect_generic(url)
+                fallback_data["platform_name"] = detection["name"]
+                fallback_data["supported_formats"] = ["mp4", "mp3"]
+                return fallback_data
+            except Exception:
+                pass
+        raise e
 
 def process_download(
     url: str,
@@ -183,12 +197,72 @@ def process_download(
                 f_type = "video"
             return download_instagram_media(target_url, format_type=f_type, progress_callback=progress_callback)
 
-    # 4. Kasus YouTube & YT Music
+    # 4. Kasus Threads
+    elif platform == Platform.THREADS:
+        if download_all_zip:
+            inspect_data = inspect_threads(url)
+            items = inspect_data.get("items", [])
+            downloaded_files = []
+            for idx, it in enumerate(items):
+                item_format = "image" if it.get("type") == "image" else "video"
+                res = download_threads_media(url, format_type=item_format, selected_item=it)
+                if res.get("file_path"):
+                    downloaded_files.append(res["file_path"])
+            
+            safe_code = os.urandom(4).hex()
+            zip_path = create_zip_archive(downloaded_files, f"Threads_{safe_code}.zip")
+            return {
+                "success": True,
+                "title": inspect_data.get("title", "Threads Collection"),
+                "file_path": str(zip_path),
+                "filename": zip_path.name,
+                "is_zip": True
+            }
+        else:
+            return download_threads_media(
+                url,
+                format_type=format_type,
+                quality=quality,
+                selected_item=selected_item,
+                progress_callback=progress_callback
+            )
+
+    # 5. Kasus Twitter / X
+    elif platform == Platform.TWITTER:
+        if download_all_zip:
+            inspect_data = inspect_twitter(url)
+            items = inspect_data.get("items", [])
+            downloaded_files = []
+            for idx, it in enumerate(items):
+                item_format = "image" if it.get("type") == "image" else "video"
+                res = download_twitter_media(url, format_type=item_format, selected_item=it)
+                if res.get("file_path"):
+                    downloaded_files.append(res["file_path"])
+
+            safe_code = os.urandom(4).hex()
+            zip_path = create_zip_archive(downloaded_files, f"Twitter_{safe_code}.zip")
+            return {
+                "success": True,
+                "title": inspect_data.get("title", "Twitter Media Collection"),
+                "file_path": str(zip_path),
+                "filename": zip_path.name,
+                "is_zip": True
+            }
+        else:
+            return download_twitter_media(
+                url,
+                format_type=format_type,
+                quality=quality,
+                selected_item=selected_item,
+                progress_callback=progress_callback
+            )
+
+    # 6. Kasus YouTube & YT Music
     elif platform in [Platform.YOUTUBE, Platform.YT_MUSIC]:
         target_url = selected_item.get("url") if selected_item else url
         return download_youtube_media(target_url, format_type=format_type, quality=quality, progress_callback=progress_callback)
 
-    # 5. Kasus Pinterest
+    # 7. Kasus Pinterest
     elif platform == Platform.PINTEREST:
         target_url = selected_item.get("url") if selected_item else url
         f_type = format_type
@@ -198,7 +272,7 @@ def process_download(
             f_type = "video"
         return download_pinterest_media(target_url, format_type=f_type, quality=quality, progress_callback=progress_callback)
 
-    # 6. Generic Fallback
+    # 8. Generic Fallback (Facebook, Reddit, Bilibili, Vimeo, dll)
     else:
         target_url = selected_item.get("url") if selected_item else url
         return download_generic_media(target_url, format_type=format_type, quality=quality, progress_callback=progress_callback)

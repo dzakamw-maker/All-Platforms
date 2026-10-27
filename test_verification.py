@@ -15,7 +15,11 @@ def test_imports():
     import app.core.spotify as sp
     import app.core.tiktok as tt
     import app.core.instagram as ig
+    import app.core.threads as th
+    import app.core.twitter as tw
+    import app.core.pinterest as pt
     import app.core.generic as gen
+    import app.utils.errors as errors
     import app.core.engine as engine
     import app.api.routes as routes
     import app.main as main
@@ -36,6 +40,9 @@ def test_detector():
         ("https://www.instagram.com/p/C123456789/", Platform.INSTAGRAM, MediaType.CAROUSEL),
         ("https://www.instagram.com/reel/C123456789/", Platform.INSTAGRAM, MediaType.VIDEO),
         ("https://x.com/user/status/123456789", Platform.TWITTER, MediaType.VIDEO),
+        ("https://www.threads.com/share/EBR7c2sRK/", Platform.THREADS, MediaType.CAROUSEL),
+        ("https://www.threads.net/@user/post/123456789", Platform.THREADS, MediaType.CAROUSEL),
+        ("https://www.facebook.com/watch/?v=123456", Platform.FACEBOOK, MediaType.VIDEO),
         ("https://soundcloud.com/artist/track", Platform.SOUNDCLOUD, MediaType.AUDIO),
         ("https://id.pinterest.com/pin/123456789/", Platform.PINTEREST, MediaType.IMAGE),
     ]

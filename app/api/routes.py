@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from app.config import DOWNLOADS_DIR, is_ffmpeg_available, get_ffmpeg_path
 from app.core.engine import inspect_url, process_download
 from app.utils.cookies import has_cookies, save_cookies_content, delete_cookies, get_cookies_path
+from app.utils.errors import clean_error_message
 
 router = APIRouter(prefix="/api")
 
@@ -44,7 +45,7 @@ def inspect_media_endpoint(req: InspectRequest):
         data = inspect_url(req.url)
         return data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=clean_error_message(str(e)))
 
 def run_download_task(task_id: str, req: DownloadRequest):
     def progress_cb(update: Dict[str, Any]):
@@ -74,7 +75,7 @@ def run_download_task(task_id: str, req: DownloadRequest):
         }
     except Exception as e:
         tasks[task_id]["status"] = "error"
-        tasks[task_id]["error"] = str(e)
+        tasks[task_id]["error"] = clean_error_message(str(e))
 
 @router.post("/download")
 def download_media_endpoint(req: DownloadRequest, background_tasks: BackgroundTasks):

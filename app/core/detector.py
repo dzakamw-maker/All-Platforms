@@ -8,9 +8,16 @@ class Platform(str, Enum):
     SPOTIFY = "spotify"
     TIKTOK = "tiktok"
     INSTAGRAM = "instagram"
+    THREADS = "threads"
     TWITTER = "twitter"
     SOUNDCLOUD = "soundcloud"
     PINTEREST = "pinterest"
+    FACEBOOK = "facebook"
+    REDDIT = "reddit"
+    BILIBILI = "bilibili"
+    VIMEO = "vimeo"
+    DAILYMOTION = "dailymotion"
+    TWITCH = "twitch"
     GENERIC = "generic"
 
 class MediaType(str, Enum):
@@ -94,7 +101,16 @@ def detect_platform(url: str) -> Dict[str, Any]:
             "url": clean_url
         }
 
-    # 6. Twitter / X
+    # 6. Threads
+    if any(domain in clean_url for domain in ["threads.net", "threads.com"]):
+        return {
+            "platform": Platform.THREADS,
+            "name": "Threads",
+            "media_type": MediaType.CAROUSEL,
+            "url": clean_url
+        }
+
+    # 7. Twitter / X
     if any(domain in clean_url for domain in ["twitter.com", "x.com"]):
         return {
             "platform": Platform.TWITTER,
@@ -103,7 +119,7 @@ def detect_platform(url: str) -> Dict[str, Any]:
             "url": clean_url
         }
 
-    # 7. SoundCloud
+    # 8. SoundCloud
     if "soundcloud.com" in clean_url:
         return {
             "platform": Platform.SOUNDCLOUD,
@@ -112,7 +128,7 @@ def detect_platform(url: str) -> Dict[str, Any]:
             "url": clean_url
         }
 
-    # 8. Pinterest
+    # 9. Pinterest
     if any(domain in clean_url for domain in ["pinterest.com", "pin.it"]):
         return {
             "platform": Platform.PINTEREST,
@@ -121,7 +137,61 @@ def detect_platform(url: str) -> Dict[str, Any]:
             "url": clean_url
         }
 
-    # 9. Generic (Fallback ke yt-dlp)
+    # 10. Facebook
+    if any(domain in clean_url for domain in ["facebook.com", "fb.watch", "fb.com"]):
+        return {
+            "platform": Platform.FACEBOOK,
+            "name": "Facebook",
+            "media_type": MediaType.VIDEO,
+            "url": clean_url
+        }
+
+    # 11. Reddit
+    if any(domain in clean_url for domain in ["reddit.com", "redd.it"]):
+        return {
+            "platform": Platform.REDDIT,
+            "name": "Reddit",
+            "media_type": MediaType.VIDEO,
+            "url": clean_url
+        }
+
+    # 12. Bilibili
+    if any(domain in clean_url for domain in ["bilibili.com", "bilibili.tv", "b23.tv"]):
+        return {
+            "platform": Platform.BILIBILI,
+            "name": "Bilibili",
+            "media_type": MediaType.VIDEO,
+            "url": clean_url
+        }
+
+    # 13. Vimeo
+    if "vimeo.com" in clean_url:
+        return {
+            "platform": Platform.VIMEO,
+            "name": "Vimeo",
+            "media_type": MediaType.VIDEO,
+            "url": clean_url
+        }
+
+    # 14. Dailymotion
+    if any(domain in clean_url for domain in ["dailymotion.com", "dai.ly"]):
+        return {
+            "platform": Platform.DAILYMOTION,
+            "name": "Dailymotion",
+            "media_type": MediaType.VIDEO,
+            "url": clean_url
+        }
+
+    # 15. Twitch
+    if "twitch.tv" in clean_url:
+        return {
+            "platform": Platform.TWITCH,
+            "name": "Twitch",
+            "media_type": MediaType.VIDEO,
+            "url": clean_url
+        }
+
+    # 16. Generic (Fallback ke yt-dlp)
     return {
         "platform": Platform.GENERIC,
         "name": "Universal / Web",
